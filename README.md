@@ -53,7 +53,7 @@ type Body struct {
     Age     int `vecty:"prop"`
 }
 
-// NewBody word
+// NewBody is a mandatory constructor to update the props on dispatch.
 func NewBody(s *vstore.Store) vecty.Component {
     state := s.GetState().(*reducer.State)
 
