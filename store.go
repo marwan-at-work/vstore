@@ -5,7 +5,7 @@ package vstore
 type Store struct {
 	r    Reducer
 	mws  []Middleware
-	subs []*SubFunc
+	subs map[*SubFunc]bool
 }
 
 // SubFunc is a subscription callback.
@@ -17,7 +17,7 @@ type Middleware func(action interface{})
 // CreateStore returns a store that you can make global dispatches to in order
 // to update the passed global state.
 func CreateStore(r Reducer, mws ...Middleware) *Store {
-	s := Store{r: r, mws: mws}
+	s := Store{r: r, mws: mws, subs: map[*SubFunc]bool{}}
 
 	return &s
 }
@@ -31,27 +31,17 @@ func (s *Store) Dispatch(action interface{}) {
 
 	s.r.Reduce(action)
 
-	for _, sub := range s.subs {
+	for sub := range s.subs {
 		(*sub)(s)
 	}
 }
 
 // Subscribe subscribes a callback to any store updates.
 func (s *Store) Subscribe(callback SubFunc) func() {
-	s.subs = append(s.subs, &callback)
+	s.subs[&callback] = true
 
 	return func() {
-		i := -1
-		for idx, sub := range s.subs {
-			if sub == &callback {
-				i = idx
-				break
-			}
-		}
-
-		if i != -1 {
-			s.subs = append(s.subs[0:i], s.subs[i:]...)
-		}
+		delete(s.subs, &callback)
 	}
 }
 

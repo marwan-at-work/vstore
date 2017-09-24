@@ -15,7 +15,6 @@ type ComponentConstructor func(s *Store) vecty.Component
 // the store is updated.
 func (s *Store) NewComponent(cc ComponentConstructor) vecty.Component {
 	c := &comp{cc: cc, s: s}
-	c.unsub = s.Subscribe(c.callback)
 
 	return c
 }
@@ -32,6 +31,10 @@ func (c *comp) Render() *vecty.HTML {
 	return elem.Div(
 		c.cc(c.s),
 	)
+}
+
+func (c *comp) Mount() {
+	c.unsub = c.s.Subscribe(c.callback)
 }
 
 func (c *comp) Unmount() {
