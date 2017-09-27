@@ -2,47 +2,40 @@ package vstore
 
 import (
 	"github.com/gopherjs/vecty"
-	"github.com/gopherjs/vecty/elem"
 )
 
-// ComponentConstructor is a function that connects a Component's props
-// to the Store's State. This will get called everytime a Store updates,
-// therefore you can just use it instantiate your Component struct and
-// give it the updated property from Store.GetState().
-type ComponentConstructor func(s *Store) vecty.Component
-
-// NewComponent returns a vecty Component that will rerender everytime
-// the store is updated.
-func (s *Store) NewComponent(cc ComponentConstructor) vecty.Component {
-	c := &comp{cc: cc, s: s}
-
-	return c
+// StoreComponent must be satisfied by components to connect to a store.
+// Also, vecty.Component is embedded to preserve component behavior.
+type StoreComponent interface {
+	vecty.Component
+	Connect(store Store)
 }
 
-type comp struct {
-	vecty.Core
-	cc    ComponentConstructor
-	s     *Store
-	unsub func()
-	test  interface{}
+// storeComponent wraps a component to add store pubsub logic.
+// Also, StoreComponent is embedded to preserve component behavior.
+type storeComponent struct {
+	StoreComponent
+	store *store
 }
 
-func (c *comp) Render() *vecty.HTML {
-	return elem.Div(
-		c.cc(c.s),
-	)
+// Connect links the store to a given component and returns the component.
+func (s *store) Connect(comp StoreComponent) StoreComponent {
+	comp.Connect(s)
+	return &storeComponent{StoreComponent: comp, store: s}
 }
 
-func (c *comp) Mount() {
-	c.unsub = c.s.Subscribe(c.callback)
+// Mount subscribes the component to the store and optionally calls mount.
+func (c *storeComponent) Mount() {
+	c.store.sub(c)
+	if mounter, ok := c.StoreComponent.(vecty.Mounter); ok {
+		mounter.Mount()
+	}
 }
 
-func (c *comp) Unmount() {
-	c.unsub()
-}
-
-func (c *comp) callback(s *Store) {
-	c.s = s
-
-	vecty.Rerender(c)
+// Unmount unsubscribes the component to the store and optionally calls unmount.
+func (c *storeComponent) Unmount() {
+	c.store.unsub(c)
+	if unmounter, ok := c.StoreComponent.(vecty.Unmounter); ok {
+		unmounter.Unmount()
+	}
 }

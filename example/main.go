@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/cathalgarvey/fmtless"
-
 	"github.com/gopherjs/vecty"
 	"github.com/gopherjs/vecty/elem"
 	"github.com/gopherjs/vecty/event"
@@ -12,41 +11,40 @@ import (
 
 func main() {
 	vecty.RenderBody(&body{
-		store: vstore.CreateStore(&store.State{}),
+		store: vstore.New(&store.State{}),
 	})
 }
 
 type body struct {
 	vecty.Core
-	store *vstore.Store
+	store vstore.Store
 }
 
 func (b *body) Render() *vecty.HTML {
 	return elem.Body(
-		b.store.NewComponent(NewMainComp),
+		b.store.Connect(NewMainComp()),
 	)
 }
 
 type mainComp struct {
 	vecty.Core
-	Number   int `vecty:"prop"`
-	Dispatch func(action interface{})
+	store vstore.Store
 }
 
 // NewMainComp is the mainComp constructor
-func NewMainComp(s *vstore.Store) vecty.Component {
-	state := s.GetState().(*store.State)
+func NewMainComp() vstore.StoreComponent {
+	return &mainComp{}
+}
 
-	return &mainComp{
-		Number:   state.Number,
-		Dispatch: s.Dispatch,
-	}
+func (comp *mainComp) Connect(store vstore.Store) {
+	comp.store = store
 }
 
 func (m *mainComp) Render() *vecty.HTML {
+	state := m.store.State().(*store.State)
 	return elem.Div(
 		elem.Div(
-			vecty.Text(fmt.Sprint(m.Number)),
+			vecty.Text(fmt.Sprint(state.Number)),
 		),
 		elem.Button(
 			vecty.Text("inc"),
@@ -64,9 +62,9 @@ func (m *mainComp) Render() *vecty.HTML {
 }
 
 func (m *mainComp) onDec(e *vecty.Event) {
-	m.Dispatch(store.Decrement{})
+	m.store.Dispatch(store.Decrement{})
 }
 
 func (m *mainComp) onInc(e *vecty.Event) {
-	m.Dispatch(store.Increment{})
+	m.store.Dispatch(store.Increment{})
 }
