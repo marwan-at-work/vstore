@@ -17,7 +17,7 @@ type store struct {
 	r   Reducer
 	mws []Middleware
 
-	mtx   sync.RWMutex
+	mtx   sync.Mutex
 	comps map[*storeComponent]bool
 }
 
@@ -31,21 +31,10 @@ func New(r Reducer, mws ...Middleware) Store {
 }
 
 // Dispatch takes an action and passes it to all middlewares and the Reduce function.
+// NOTE: dispatch is called in a goroutine.
 // NOTE: vecty.Rerender is called in a goroutine for each subscribed component.
 func (s *store) Dispatch(action interface{}) {
-	for _, m := range s.mws {
-		m(action)
-	}
-
-	s.r.Reduce(action)
-
-	s.mtx.RLock()
-	defer s.mtx.RUnlock()
-
-	for comp := range s.comps {
-		comp := comp
-		go vecty.Rerender(comp)
-	}
+	go s.dispatch(action)
 }
 
 // State returns global state.
@@ -67,4 +56,25 @@ func (s *store) unsub(comp *storeComponent) {
 	defer s.mtx.Unlock()
 
 	delete(s.comps, comp)
+}
+
+// dispatch is called from Dispatch.
+func (s *store) dispatch(action interface{}) {
+	for _, m := range s.mws {
+		m(action)
+	}
+
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+	s.r.Reduce(action)
+
+	for comp := range s.comps {
+		go s.rerender(comp)
+	}
+}
+
+// rerender connects the store to the component and calls vecty.Rerender on the component.
+func (s *store) rerender(comp *storeComponent) {
+	comp.Connect(s)
+	vecty.Rerender(comp)
 }

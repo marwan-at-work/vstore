@@ -11,7 +11,7 @@ type StoreComponent interface {
 	Connect(store Store)
 }
 
-// storeComponent wraps a component to add store pubsub logic.
+// storeComponent embeds a component to add store pubsub logic.
 // Also, StoreComponent is embedded to preserve component behavior.
 type storeComponent struct {
 	StoreComponent
