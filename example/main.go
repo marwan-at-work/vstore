@@ -20,7 +20,7 @@ type body struct {
 	store vstore.Store
 }
 
-func (b *body) Render() *vecty.HTML {
+func (b *body) Render() vecty.ComponentOrHTML {
 	return elem.Body(
 		b.store.Connect(NewMainComp()),
 	)
@@ -44,7 +44,7 @@ func (m *mainComp) Connect(store vstore.Store) {
 	m.Number = state.Number
 }
 
-func (m *mainComp) Render() *vecty.HTML {
+func (m *mainComp) Render() vecty.ComponentOrHTML {
 	return elem.Div(
 		elem.Div(
 			vecty.Text(fmt.Sprint(m.Number)),
