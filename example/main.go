@@ -5,8 +5,8 @@ import (
 	"github.com/gopherjs/vecty"
 	"github.com/gopherjs/vecty/elem"
 	"github.com/gopherjs/vecty/event"
-	"github.com/marwan-at-work/vstore"
-	number "github.com/marwan-at-work/vstore/example/store"
+	"marwan.io/vstore"
+	number "marwan.io/vstore/example/store"
 )
 
 func main() {

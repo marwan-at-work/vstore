@@ -1,0 +1,8 @@
+github.com/cathalgarvey/fmtless v0.0.0-20160509115409-5077ea938891 h1:xI+8e6zab6gwsycpo0sENGYF8DmagNYnyOxpRhnA1eE=
+github.com/cathalgarvey/fmtless v0.0.0-20160509115409-5077ea938891/go.mod h1:47i2Tts0Ndudv8RXhALRmYzK4gB8Qh39wOGy5H9FIOU=
+github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e h1:JKmoR8x90Iww1ks85zJ1lfDGgIiMDuIptTOhJq+zKyg=
+github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
+github.com/gopherjs/vecty v0.0.0-20180525005238-a3bd138280bf h1:J7WjKCdpxMhXDzFPP6d41YonnCnPi1JkYOFxIPoH1E0=
+github.com/gopherjs/vecty v0.0.0-20180525005238-a3bd138280bf/go.mod h1:5YRDuy7i7SgM0kL+0b5oq+jfDTqPyzV3TQbcDkBvcoE=
+github.com/marwan-at-work/vstore v0.0.0-20171104155658-68600fd02b5b h1:Z0zKKq+cvz4jwGrshwNOgRp5AeyV5TIyJvvmnU8A1Hc=
+github.com/marwan-at-work/vstore v0.0.0-20171104155658-68600fd02b5b/go.mod h1:sV1dKN3SDVg0tbubdO9rla5NAMKE/UNr1mDVDqlCT+M=
